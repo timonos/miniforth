@@ -21,7 +21,6 @@
 #!/usr/bin/env python3
 # A minimal FORTH, no builtin words beyond `:`
 
-
 class FORTH (object):
     def __init__(self, src: str):
         self.src = src
@@ -30,6 +29,16 @@ class FORTH (object):
 
         self.defn = ':'
         self.term = ';'
+
+        self.bltn = {}
+
+    def load(self):
+        """ Load word definitions """
+        self.src = self.src.replace(self.term, f' {self.term} ')
+        self.src = self.src.replace(self.defn, f' {self.defn} ')
+        self.src = self.src.split()
+
+        while self.define(): continue
 
     def define(self):
         """ Define a single word on the toplevel """
@@ -45,21 +54,14 @@ class FORTH (object):
     def eval(self, word: str = []):
         """ Evaluate an expression """
         if len(word) == 0 and len(self.src) != 0:
-            return self.eval(self.src)
+            while self.eval(self.src): continue
 
         for w in word:
             if w.isnumeric(): self.stk.append(float(w))
-            elif w is self.term: return self.stk[-1]
+            elif w is self.term: self.src = self.src[1:]; return True
             else: self.eval(self.dct[w])
 
-    def load(self):
-        """ Load word definitions """
-        self.src = self.src.replace(self.term, f' {self.term} ')
-        self.src = self.src.replace(self.defn, f' {self.defn} ')
-        self.src = self.src.split()
-
-        while self.define(): continue
-
-forth = FORTH(': a 3 4; a;')
+forth = FORTH(': a 3 4 2; 10; a;')
 forth.load()
-print(forth.eval())
+forth.eval()
+print(forth.stk)
