@@ -61,7 +61,8 @@ class FORTH (object):
             elif w is self.term: self.src = self.src[1:]; return True
             else: self.eval(self.dct[w])
 
-forth = FORTH(': a 3 4 2; 10; a;')
+forth = FORTH(': a 3 4 2 10; a;')
 forth.load()
 forth.eval()
+
 print(forth.stk)
